@@ -1,0 +1,46 @@
+# NVIDIA cuDNN download LINK
+https://developer.nvidia.com/cudnn-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=24.04&target_type=deb_local
+
+# Specification
+CUDA = 11.8
+UBUNTU = 24.04
+Python = 3.7
+Tensorflow = 2.11.0
+Tensorrt = 8.5.1.7 #requires c
+	 = 7.2.3 (required for pilotnet)
+	 = 7.2.2 (current version)
+cuDNN = 9.x (system-wide)
+	8.6 (conda carla9.13_py3.7)
+	
+	
+### Switch between gcc versions for build
+sudo update-alternatives --config gcc
+sudo update-alternatives --config gcc
+
+# Loading dynamic libraries
+https://github.com/tensorflow/tensorflow/issues/45930#issuecomment-773308437
+
+
+
+Remember to install back protobuf 3.19.6 for tensorflow 2.11 to work. Installed 3.20.3 for tf2onxx to work
+
+## $LD_LIBRARY_PATH fix for new CONDA environments
+	1. mkdir -p $CONDA_PREFIX/etc/conda/activate.d
+	2. nano $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+	3. ADD THESE LINES:
+		export LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/lib"
+		export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CONDA_PREFIX/lib"
+_________________________________________________________________________________________________________________________________________________
+
+### Important Links
+    # GitHub
+    1. CIL - https://github.com/merantix/imitation-learning/tree/master
+    2. PilotNet* - https://huggingface.co/sergiopaniego/OptimizedPilotNet
+    3. PilotNet Train - https://github.com/vishalkrishnads/pilotnet/tree/main
+    
+    # Compatibility matrix
+    https://www.tensorflow.org/install/source
+    
+    
+NOTE: To restart or start the VNC Server use command:
+	sudo systemctl restart vncserver-x11-serviced.service #systemd /etc/init.d/vncserver-virtuald start #initd
