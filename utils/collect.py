@@ -28,10 +28,9 @@ class Collector:
         self.directory = f'recordings/{datetime.datetime.now().strftime("%Y-%m-%d@%H.%M.%S" if os.name is "nt" else "%Y-%m-%d@%H:%M:%S" )}'
         self.start(sim_time)
     
-    def record(self, image):
-        control = self.vehicle.get_control()        
-        image.save_to_disk(f'{self.directory}/{[int((datetime.datetime.now() - self.start_time).total_seconds()), control.steer, control.throttle, control.brake]}.png')
-        
+    def record(self, image, bias):
+        control = self.vehicle.get_control()
+        image.save_to_disk(f'{self.directory}/{[int((datetime.datetime.now() - self.start_time).total_seconds()), control.steer + bias, control.throttle, control.brake, bias]}.png')
         # we now convert image into a raw image to show in our display
         image.convert(carla.ColorConverter.Raw)
         
@@ -95,6 +94,9 @@ class Collector:
             # make a camera and configure it
             message('Spawning camera and attaching to vehicle')
             camera_init_trans = carla.Transform(carla.Location(x=0.8, z=1.7))
+            camera_left_init_trans = carla.Transform(carla.Location(x=0.8, y=-0.5, z=1.7), carla.Rotation(yaw = -45))
+            camera_right_init_trans = carla.Transform(carla.Location(x=0.8, y=0.5, z=1.7), carla.Rotation(yaw = 45))
+
             camera_blueprint = self.world.get_blueprint_library().find('sensor.camera.rgb')
             camera_blueprint.set_attribute('image_size_x', '720')
             camera_blueprint.set_attribute('image_size_y', '405')
@@ -125,7 +127,12 @@ class Collector:
 
         # attach camera to vehicle and start recording
         self.camera = self.world.spawn_actor(camera_blueprint, camera_init_trans, attach_to=self.vehicle)
-        self.camera.listen(lambda image: self.record(image))
+        self.camera_left = self.world.spawn_actor(camera_blueprint, camera_left_init_trans, attach_to=self.vehicle)
+        self.camera_right = self.world.spawn_actor(camera_blueprint, camera_right_init_trans, attach_to=self.vehicle)
+        
+        self.camera.listen(lambda image: self.record(image,0))
+        self.camera_left.listen(lambda image: self.record(image,0.2))
+        self.camera_right.listen(lambda image: self.record(image,-0.2))
         #tm = self.client.get_trafficmanager()
         #tm_port = tm.get_port()
 
