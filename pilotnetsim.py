@@ -5,6 +5,7 @@ import cv2
 import time
 
 import os
+from carla import WeatherParameters
 
 os.environ["TF_GPU_ALLOCATOR"] = "cuda_malloc_async"
 
@@ -37,16 +38,25 @@ def main():
     client = carla.Client("localhost", 2000)
     client.set_timeout(10.0)
     world = client.get_world()
-    #client.reload_world()
+    # weather = WeatherParameters(
+    # sun_altitude_angle=90.0,  # High noon = minimal shadows
+    # sun_azimuth_angle=0.0,
+    # cloudiness=0.0,           # Clear sky (no cloud shadows)
+    # precipitation=0.0,
+    # fog_density=0.0,
+    # wetness=0.0
+    # )
+    # world.set_weather(weather)
+    # client.reload_world()
     blueprint_library = world.get_blueprint_library()
 
     # Spawn the vehicle
     #bp = blueprint_library.filter("model3")[0]
     bp = blueprint_library.find('vehicle.dodge.charger_police') 
-    spawn_point = world.get_map().get_spawn_points()[149]
+    spawn_point = world.get_map().get_spawn_points()[144]                 # 144 -> RT-LL; 7 -> LT-RL
     vehicle = world.spawn_actor(bp, spawn_point)
     # Set spectator to follow the vehicle
-    # spectator = world.get_spectator()
+    spectator = world.get_spectator()
     # Attach a front-facing camera
     camera_bp = blueprint_library.find("sensor.camera.rgb")
     camera_bp.set_attribute("image_size_x", "720")
@@ -55,13 +65,18 @@ def main():
     camera_init_trans = carla.Transform(carla.Location(x=0.8, z=1.7))
     camera = world.spawn_actor(camera_bp, camera_init_trans, attach_to=vehicle)
 
+    # settings = world.get_settings()
+    # settings.synchronous_mode = True
+    # settings.fixed_delta_seconds = 0.025  # 20 Hz
+    # world.apply_settings(settings)
+
     # Load trained PilotNet model
     #model = tf.keras.models.load_model("./pilotnetopt")
     print("GPU: ", tf.test.is_gpu_available)
     
     with tf.device("gpu:0"):
         #model = tf.saved_model.load("./pilotnetopt")
-        model = tf.keras.models.load_model("models/PilotNet_v22.h5")
+        model = tf.keras.models.load_model("models/PilotNet_v26.h5")
     
     print("Done loading those balls......")
 
@@ -121,14 +136,14 @@ def main():
         if steering < 0.04 and steering > -0.04:
             control.steer = 0
         
-        control.throttle = 0.2
+        control.throttle = 0.20
         
         #print(control.steer, control.throttle, control.brake, sep = '\n')
         print(control.steer, control.throttle, sep = '\n')
         vehicle.apply_control(control)
 
         i=i+1
-        cv2.imwrite(f"sim_images/{i}_{steering}.png",img_display*255)
+        #cv2.imwrite(f"sim_images/{i}_{steering}.png",img_display*255)
         #cv2.imshow("Image Seen: ", img_display)
         #cv2.waitKey(1)
 
@@ -142,7 +157,7 @@ def main():
             #     transform.location + carla.Location(x=-10, z=2),
             #     carla.Rotation(pitch=-15, yaw=transform.rotation.yaw)
             # ))
-
+            #world.tick()
             time.sleep(0.1)
     except KeyboardInterrupt:
         camera.stop()

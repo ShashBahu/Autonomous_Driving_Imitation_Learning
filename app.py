@@ -88,15 +88,15 @@ class Menu():
             world = client.get_world()
             message('Connected to CARLA server')
             
-            weather = WeatherParameters(
-            sun_altitude_angle=90.0,  # High noon = minimal shadows
-            sun_azimuth_angle=0.0,
-            cloudiness=0.0,           # Clear sky (no cloud shadows)
-            precipitation=0.0,
-            fog_density=0.0,
-            wetness=0.0
-            )
-            world.set_weather(weather)
+            # weather = WeatherParameters(
+            # sun_altitude_angle=90.0,  # High noon = minimal shadows
+            # sun_azimuth_angle=0.0,
+            # cloudiness=0.0,           # Clear sky (no cloud shadows)
+            # precipitation=0.0,
+            # fog_density=0.0,
+            # wetness=0.0
+            # )
+            # world.set_weather(weather)
         except:
             try:
                 warn('There seems to be a problem with your CARLA server. Retrying with WSL address...')

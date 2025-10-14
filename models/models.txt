@@ -1,0 +1,6 @@
+PilotNet_v1- PilotNet_v21 	: IGNORE
+PilotNet_v22 			: Compared with AutoDeep - NO Batch Normalisation and added L2 Regularisation (did wayyyyy better). Dataset from Town01 and Town10HD -> Left lane and no shadow
+PilotNet_v23			: v22+v24 combined
+PilotNet_v24			: 3-camera setup on ONLY Town10HD and limited to LEFT LANES (Did do better than v22 before straying to right lane)
+PilotNet_v25			: 3-camera setup with BOTH LANES only Town10HD
+PilotNet_v26			: 23 + Town10HD right lanes with shadows

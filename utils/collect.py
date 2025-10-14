@@ -52,7 +52,7 @@ class Collector:
 
         try:
             # === Manually define loop endpoints: Town01 ===
-            ## RIGHT TURN
+            ## RIGHT TURN 
             #start_location = carla.Location(x=22.18, y=326.97, z=0.30)
             #end_location   = carla.Location(x=1.51, y=295.42, z=0.30)
             
@@ -61,13 +61,21 @@ class Collector:
             # end_location   = carla.Location(x=22.18, y=330.46, z=0.30)
 
             # === Manually define loop endpoints: Town10HD ===
-            # Left Turn
+            # LEFT TURN: Left-Lane
             # start_location = carla.Location(x=-110.96, y=59.69, z=0.60)
             # end_location   = carla.Location(x=106.02, y=50.87, z=0.60)
 
-            # Right Turn
-            start_location = carla.Location(x=-13.34, y=-61.05, z=0.60)
-            end_location   = carla.Location(x=102.93, y=-9.38, z=0.60)
+            # LEFT TURN : Right-Lane
+            start_location = carla.Location(x=-114.43, y=56.85, z=0.60)
+            end_location   = carla.Location(x=109.52, y=89.84, z=0.60)
+
+            # RIGHT TURN : Left-lane
+            # start_location = carla.Location(x=-13.34, y=-61.05, z=0.60)
+            # end_location   = carla.Location(x=102.93, y=-9.38, z=0.60)
+
+            # RIGHT TURN : Right-lane
+            # start_location = carla.Location(x=26.38, y=-57.40, z=0.60)
+            # end_location   = carla.Location(x=99.38, y=-6.31, z=0.60) 
 
             # Snap to roads
             start_wp = self.map.get_waypoint(start_location, project_to_road=True)
@@ -122,7 +130,7 @@ class Collector:
         }
 
         # Setup agent
-        agent = BasicAgent(self.vehicle, target_speed=30, opt_dict=instr)
+        agent = BasicAgent(self.vehicle, target_speed=40, opt_dict=instr)
         agent.set_global_plan(full_loop) 
 
         # attach camera to vehicle and start recording
@@ -171,6 +179,8 @@ class Collector:
         message('Quitting recorder')
         try:
             self.camera.stop() # destroy sensor in main smiulation (server)
+            self.camera_left.stop()
+            self.camera_right.stop()
             self.vehicle.destroy()
         except:
             pass
