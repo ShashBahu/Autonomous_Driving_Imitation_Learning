@@ -7,6 +7,8 @@ import time
 import os
 from carla import WeatherParameters
 
+import queue
+
 os.environ["TF_GPU_ALLOCATOR"] = "cuda_malloc_async"
 
 # from ctypes import *
@@ -38,22 +40,28 @@ def main():
     client = carla.Client("localhost", 2000)
     client.set_timeout(10.0)
     world = client.get_world()
-    # weather = WeatherParameters(
-    # sun_altitude_angle=90.0,  # High noon = minimal shadows
-    # sun_azimuth_angle=0.0,
-    # cloudiness=0.0,           # Clear sky (no cloud shadows)
-    # precipitation=0.0,
-    # fog_density=0.0,
-    # wetness=0.0
-    # )
-    # world.set_weather(weather)
+
+    # settings = world.get_settings()
+    # settings.synchronous_mode = True
+    # settings.fixed_delta_seconds = 0.01  # 100 Hz
+    # world.apply_settings(settings)
+
+    weather = WeatherParameters(
+    sun_altitude_angle=90.0,  # High noon = minimal shadows
+    sun_azimuth_angle=0.0,
+    cloudiness=0.0,           # Clear sky (no cloud shadows)
+    precipitation=0.0,
+    fog_density=0.0,
+    wetness=0.0
+    )
+    world.set_weather(weather)
     # client.reload_world()
     blueprint_library = world.get_blueprint_library()
 
     # Spawn the vehicle
     #bp = blueprint_library.filter("model3")[0]
     bp = blueprint_library.find('vehicle.dodge.charger_police') 
-    spawn_point = world.get_map().get_spawn_points()[144]                 # 144 -> RT-LL; 7 -> LT-RL
+    spawn_point = world.get_map().get_spawn_points()[6]                 # 144 -> RT-LL; 7 -> LT-RL; 6 -> LT-LL
     vehicle = world.spawn_actor(bp, spawn_point)
     # Set spectator to follow the vehicle
     spectator = world.get_spectator()
@@ -65,10 +73,6 @@ def main():
     camera_init_trans = carla.Transform(carla.Location(x=0.8, z=1.7))
     camera = world.spawn_actor(camera_bp, camera_init_trans, attach_to=vehicle)
 
-    # settings = world.get_settings()
-    # settings.synchronous_mode = True
-    # settings.fixed_delta_seconds = 0.025  # 20 Hz
-    # world.apply_settings(settings)
 
     # Load trained PilotNet model
     #model = tf.keras.models.load_model("./pilotnetopt")
@@ -76,7 +80,7 @@ def main():
     
     with tf.device("gpu:0"):
         #model = tf.saved_model.load("./pilotnetopt")
-        model = tf.keras.models.load_model("models/PilotNet_v26.h5")
+        model = tf.keras.models.load_model("models/PilotNet_v24.h5")
     
     print("Done loading those balls......")
 
@@ -147,6 +151,8 @@ def main():
         #cv2.imshow("Image Seen: ", img_display)
         #cv2.waitKey(1)
 
+    #image_queue = queue.Queue()
+    #camera.listen(image_queue.put)
     camera.listen(lambda image: drive(image))
 
     try:
@@ -157,12 +163,22 @@ def main():
             #     transform.location + carla.Location(x=-10, z=2),
             #     carla.Rotation(pitch=-15, yaw=transform.rotation.yaw)
             # ))
-            #world.tick()
+            # try:
+            #     image = image_queue.get()
+            # except queue.Empty:
+            #     print("WARNING: Did not receive camera image in time.")
+            #     continue
+            # # inference & control here
+            # drive(image)
+            world.tick()
+
             time.sleep(0.1)
     except KeyboardInterrupt:
         camera.stop()
         vehicle.destroy()
         print("Simulation ended. Vehicle and camera destroyed.")
+    except Exception as e:
+        print("Exception:", e)
 
 if __name__ == '__main__':
     main()

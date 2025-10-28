@@ -4,7 +4,7 @@ import random
 import json
 
 r=0.5
-def remove_low_steering_images(folder_path, threshold=0.0075):
+def remove_low_steering_images(folder_path, threshold=0.006):
     removed = 0
     with os.scandir(f'{folder_path}/recordings/') as recordings:
         for recording in recordings:

@@ -66,12 +66,12 @@ class Collector:
             # end_location   = carla.Location(x=106.02, y=50.87, z=0.60)
 
             # LEFT TURN : Right-Lane
-            start_location = carla.Location(x=-114.43, y=56.85, z=0.60)
-            end_location   = carla.Location(x=109.52, y=89.84, z=0.60)
+            # start_location = carla.Location(x=-114.43, y=56.85, z=0.60)
+            # end_location   = carla.Location(x=109.52, y=89.84, z=0.60)
 
             # RIGHT TURN : Left-lane
-            # start_location = carla.Location(x=-13.34, y=-61.05, z=0.60)
-            # end_location   = carla.Location(x=102.93, y=-9.38, z=0.60)
+            start_location = carla.Location(x=-13.34, y=-61.05, z=0.60)
+            end_location   = carla.Location(x=102.93, y=-9.38, z=0.60)
 
             # RIGHT TURN : Right-lane
             # start_location = carla.Location(x=26.38, y=-57.40, z=0.60)

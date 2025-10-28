@@ -4,3 +4,4 @@ PilotNet_v23			: v22+v24 combined
 PilotNet_v24			: 3-camera setup on ONLY Town10HD and limited to LEFT LANES (Did do better than v22 before straying to right lane)
 PilotNet_v25			: 3-camera setup with BOTH LANES only Town10HD
 PilotNet_v26			: 23 + Town10HD right lanes with shadows
+PilotNet_v27			: 26 + Full Town10HD left lanes no shadows
